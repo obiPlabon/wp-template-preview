@@ -18,7 +18,7 @@ Along with the regular custom template header just add another header key **Prev
 ![WP Template Preview In Action](imgs/wp-template-preview-in-action.gif)
 
 ## Feedback
-If you wanna share your tought or have any idea that you wanna discuss then here I'm!
+Liked this? then don't forget to give me **star**, it'll inspire me. And if you wanna share your tought or have any idea that you wanna discuss then here I'm!
 
 - [obiPlabon](https://fb.me/obiPlabon) on facebook
 - [obiPlabon](https://twitter.com/obiPlabon) on twitter
