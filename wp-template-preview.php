@@ -147,7 +147,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * Get all preivew images of the current post type
 		 *
 		 * @param object $post WP_Post object
-		 * @return void
+		 * @return array Images URI with template name
 		 */
 		protected function get_images( $post ) {
 			$images = array();
@@ -169,7 +169,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * Get template preview image header data
 		 *
 		 * @param string $template_file Template file name
-		 * @return void
+		 * @return array Header data
 		 */
 		protected function get_header_data( $template_file ) {
 			return get_file_data( get_template_directory() . DIRECTORY_SEPARATOR . $template_file, $this->header );
