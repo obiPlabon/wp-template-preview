@@ -131,7 +131,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 			$images = $this->get_images( $post );
 			$images['default'] = ''; // Prevents breaking
 
-			if ( empty( $images ) && isset( $images[ $template ] ) ) {
+			if ( empty( $images ) || ! isset( $images[ $template ] ) ) {
 				return;
 			}
 			?>
