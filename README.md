@@ -29,4 +29,4 @@ Liked this? Then don't forget to give me a **star** :D, it'll inspire me. And if
 - [obiPlabon](https://twitter.com/obiPlabon) on twitter
 
 ## Contributors
-- [Md Jahidul Islam](https://github.com/onetarek) - Added template preview feature.
+- [Md Jahidul Islam](https://github.com/onetarek) - Added template preview link feature.
