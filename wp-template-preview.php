@@ -41,6 +41,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		public function __construct() {
 			add_action( 'load-post.php', array( $this, 'init' ) );
 			add_action( 'load-post-new.php', array( $this, 'init' ) );
+			add_filter( 'template_include', array($this,'set_preview_template'));
 		}
 
 		/**
@@ -245,6 +246,21 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 */
 		protected function get_path() {
 			return get_template_directory() . DIRECTORY_SEPARATOR;
+		}
+
+		public function set_preview_template( $template ) {
+			if( !is_preview() ){
+				return $template;
+			}
+
+			if( isset( $_GET['template'] ) && $_GET['template'] !="" ){
+				$new_template = locate_template( $_GET['template'], false, false );
+				if( $new_template ){
+					return $new_template;
+				}
+			}
+			
+			return $template;
 		}
 	}
 
