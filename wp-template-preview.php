@@ -42,7 +42,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		public function __construct() {
 			add_action( 'load-post.php', array( $this, 'init' ) );
 			add_action( 'load-post-new.php', array( $this, 'init' ) );
-			add_filter( 'template_include', array($this,'set_preview_template'));
+			add_filter( 'template_include', array( $this,'set_preview_template' ) );
 		}
 
 		/**
@@ -155,14 +155,13 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 */
 		public function render_frame( $template, $post ) {
 			$links = $this->get_preview_links( $post );
-			if( count( $links ) )
-			{
-				$current_tempalte_preview_link = isset( $links[$template] ) ? $links[$template] : "#";
-			?>
-			<div id="wp-template-preview-links" data-template-preview-links="<?php echo esc_js( wp_json_encode( $links ) ); ?>">
-				<a target="_blank" href="<?php echo esc_url( $current_tempalte_preview_link ); ?>">Template Preview</a>
-			</div>
-			<?php
+			if ( count( $links ) ) {
+				$current_template_preview_link = isset( $links[ $template ] ) ? $links[ $template ] : '#';
+				?>
+				<div id="wp-template-preview-links" data-template-preview-links="<?php echo esc_js( wp_json_encode( $links ) ); ?>">
+					<a target="_blank" href="<?php echo esc_url( $current_template_preview_link ); ?>"><?php esc_html_e( 'Template Preview', 'wp-template-preview' ); ?></a>
+				</div>
+				<?php
 			}
 
 			$images = $this->get_images( $post );
@@ -206,17 +205,17 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * Get the list of all preview links
 		 * 
 		 * Get all preivew links for all templates for current post
-		 *
+		 * 
 		 * @param object $post WP_Post object
 		 * @return array URL
 		 * @author oneTarek
 		 */
 		protected function get_preview_links( $post ) {
-			$links = array();
+			$links        = array();
+			$templates    = get_page_templates( $post );
 			$preview_link = get_preview_post_link( $post );
-			$templates = get_page_templates( $post );
 			foreach ( $templates as $template_name => $template_file ) {
-				$links[$template_file] = add_query_arg( array("template"=>$template_file), $preview_link );
+				$links[ $template_file ] = add_query_arg( array( 'template' => $template_file ), $preview_link );
 			}
 			return $links;
 		}
@@ -250,21 +249,23 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		}
 
 		/**
-		 * Filter wp current tempalte. 
+		 * Filter wp current tempalte.
+		 * 
 		 * If current request is a page preview request and custom 
 		 * page tempalte file name is given with url then load that new tempalte
+		 * 
 		 * @param string $template.
 		 * @return string 
-		 * @author : oneTarek
+		 * @author oneTarek
 		 **/
 		public function set_preview_template( $template ) {
-			if( !is_preview() ){
+			if ( ! is_preview() ) {
 				return $template;
 			}
 
-			if( isset( $_GET['template'] ) && $_GET['template'] !="" ){
+			if ( isset( $_GET['template'] ) && '' != $_GET['template'] ) {
 				$new_template = locate_template( $_GET['template'], false, false );
-				if( $new_template ){
+				if ( $new_template ) {
 					return $new_template;
 				}
 			}
