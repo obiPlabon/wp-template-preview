@@ -164,6 +164,25 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 			}
 			return $images;
 		}
+
+		/**
+		 * Get the list of all preview links
+		 * 
+		 * Get all preivew links for all templates for current post
+		 *
+		 * @param object $post WP_Post object
+		 * @return array URL
+		 * @author oneTarek
+		 */
+		protected function get_preview_links( $post ) {
+			$links = array();
+			$preview_link = get_preview_post_link( $post );
+			$templates = get_page_templates( $post );
+			foreach ( $templates as $template_name => $template_file ) {
+				$links[] = add_query_arg( array("template"=>$template_file), $preview_link );
+			}
+			return $links;
+		}
 		
 		/**
 		 * Get template preview image header data
