@@ -6,6 +6,7 @@
  * Version: 0.0.7
  * Author: obiPlabon
  * Author URI: https://obiPlabon.im
+ * Contributor: oneTarek http://onetarek.com
  *
  * Text Domain: wp-template-preview
  * Domain Path: /lang
@@ -248,6 +249,14 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 			return get_template_directory() . DIRECTORY_SEPARATOR;
 		}
 
+		/**
+		 * Filter wp current tempalte. 
+		 * If current request is a page preview request and custom 
+		 * page tempalte file name is given with url then load that new tempalte
+		 * @param string $template.
+		 * @return string 
+		 * @author : oneTarek
+		 **/
 		public function set_preview_template( $template ) {
 			if( !is_preview() ){
 				return $template;
