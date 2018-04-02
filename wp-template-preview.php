@@ -66,6 +66,10 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		public function enqueue_style() {
 			?>
 			<style>
+				#wp-template-preview-links {
+					margin-top: .5em;
+					margin-bottom: .5em;
+				}
 				#wp-template-preview {
 					margin-top: .5em;
 				}
@@ -88,9 +92,13 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 				jQuery( function( $ ) {
 					var $pageTemplate     = $( '#page_template' ),
 						$wpTemplatePrview = $( '#wp-template-preview' ),
-						$previewImage     = $wpTemplatePrview.find( 'img' ),
+						$previewImage     = $wpTemplatePrview.find( 'img' ), 
 						$deletableEmptyP  = $( '#wp-template-preview' ).next(),
 						templatePreviews  = $wpTemplatePrview.data( 'template-images' );
+						
+						$wpTemplatePrviewLinks = $( '#wp-template-preview-links' ),
+						$previewLinkTag = $wpTemplatePrviewLinks.find('a').first(),
+						templatePreviewLinks  = $wpTemplatePrviewLinks.data( 'template-preview-links' );
 
 					if ( $deletableEmptyP.is( 'p' ) && 0 === $deletableEmptyP.text().length ) {
 						$deletableEmptyP.remove();
@@ -102,13 +110,29 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 						var template = $( this ).val();
 						if ( $.isPlainObject( templatePreviews ) && typeof templatePreviews[ template ] !== undefined ) {
 							$previewImage.attr( 'src', templatePreviews[ template ] );
+
 						}
-						
+
 						if ( ! $previewImage.prop( 'src' ) ) {
 							$wpTemplatePrview.addClass( 'hidden' );
 						} else {
 							$wpTemplatePrview.removeClass( 'hidden' );
 						}
+
+						if ( $.isPlainObject( templatePreviewLinks ) && typeof templatePreviewLinks[ template ] !== 'undefined' ) {
+							$previewImage.attr( 'src', templatePreviews[ template ] );
+							$previewLinkTag.attr( 'href', templatePreviewLinks[ template ] );
+
+						}else{
+							$previewLinkTag.attr( 'href', "#" );
+						}
+
+						if ( ! $previewLinkTag.prop( 'href' ) || $previewLinkTag.attr( 'href' ) == "#" ) {
+							$wpTemplatePrviewLinks.addClass( 'hidden' );
+						} else {
+							$wpTemplatePrviewLinks.removeClass( 'hidden' );
+						}
+
 					} );
 
 					$pageTemplate.trigger( 'change.wpTemplatePreview' );
@@ -128,6 +152,17 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * @return void
 		 */
 		public function render_frame( $template, $post ) {
+			$links = $this->get_preview_links( $post );
+			if( count( $links ) )
+			{
+				$current_tempalte_preview_link = isset( $links[$template] ) ? $links[$template] : "#";
+			?>
+			<div id="wp-template-preview-links" data-template-preview-links="<?php echo esc_js( wp_json_encode( $links ) ); ?>">
+				<a target="_blank" href="<?php echo esc_url( $current_tempalte_preview_link ); ?>">Template Preview</a>
+			</div>
+			<?php
+			}
+
 			$images = $this->get_images( $post );
 			$images['default'] = ''; // Prevents breaking
 
