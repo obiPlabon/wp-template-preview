@@ -110,7 +110,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 
 					$pageTemplate.on( 'change.wpTemplatePreview', function() {
 						var template = $( this ).val();
-						if ( $.isPlainObject( templatePreviews ) && typeof templatePreviews[ template ] !== undefined ) {
+						if ( $.isPlainObject( templatePreviews ) && typeof templatePreviews[ template ] !== 'undefined' ) {
 							$previewImage.attr( 'src', templatePreviews[ template ] );
 
 						}
