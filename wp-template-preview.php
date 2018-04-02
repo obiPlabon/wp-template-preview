@@ -6,6 +6,7 @@
  * Version: 0.0.7
  * Author: obiPlabon
  * Author URI: https://obiPlabon.im
+ * Contributor: oneTarek http://onetarek.com
  *
  * Text Domain: wp-template-preview
  * Domain Path: /lang
@@ -41,6 +42,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		public function __construct() {
 			add_action( 'load-post.php', array( $this, 'init' ) );
 			add_action( 'load-post-new.php', array( $this, 'init' ) );
+			add_filter( 'template_include', array($this,'set_preview_template'));
 		}
 
 		/**
@@ -66,6 +68,10 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		public function enqueue_style() {
 			?>
 			<style>
+				#wp-template-preview-links {
+					margin-top: .5em;
+					margin-bottom: .5em;
+				}
 				#wp-template-preview {
 					margin-top: .5em;
 				}
@@ -88,9 +94,13 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 				jQuery( function( $ ) {
 					var $pageTemplate     = $( '#page_template' ),
 						$wpTemplatePrview = $( '#wp-template-preview' ),
-						$previewImage     = $wpTemplatePrview.find( 'img' ),
+						$previewImage     = $wpTemplatePrview.find( 'img' ), 
 						$deletableEmptyP  = $( '#wp-template-preview' ).next(),
 						templatePreviews  = $wpTemplatePrview.data( 'template-images' );
+						
+						$wpTemplatePrviewLinks = $( '#wp-template-preview-links' ),
+						$previewLinkTag = $wpTemplatePrviewLinks.find('a').first(),
+						templatePreviewLinks  = $wpTemplatePrviewLinks.data( 'template-preview-links' );
 
 					if ( $deletableEmptyP.is( 'p' ) && 0 === $deletableEmptyP.text().length ) {
 						$deletableEmptyP.remove();
@@ -102,13 +112,29 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 						var template = $( this ).val();
 						if ( $.isPlainObject( templatePreviews ) && typeof templatePreviews[ template ] !== undefined ) {
 							$previewImage.attr( 'src', templatePreviews[ template ] );
+
 						}
-						
+
 						if ( ! $previewImage.prop( 'src' ) ) {
 							$wpTemplatePrview.addClass( 'hidden' );
 						} else {
 							$wpTemplatePrview.removeClass( 'hidden' );
 						}
+
+						if ( $.isPlainObject( templatePreviewLinks ) && typeof templatePreviewLinks[ template ] !== 'undefined' ) {
+							$previewImage.attr( 'src', templatePreviews[ template ] );
+							$previewLinkTag.attr( 'href', templatePreviewLinks[ template ] );
+
+						}else{
+							$previewLinkTag.attr( 'href', "#" );
+						}
+
+						if ( ! $previewLinkTag.prop( 'href' ) || $previewLinkTag.attr( 'href' ) == "#" ) {
+							$wpTemplatePrviewLinks.addClass( 'hidden' );
+						} else {
+							$wpTemplatePrviewLinks.removeClass( 'hidden' );
+						}
+
 					} );
 
 					$pageTemplate.trigger( 'change.wpTemplatePreview' );
@@ -128,6 +154,17 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * @return void
 		 */
 		public function render_frame( $template, $post ) {
+			$links = $this->get_preview_links( $post );
+			if( count( $links ) )
+			{
+				$current_tempalte_preview_link = isset( $links[$template] ) ? $links[$template] : "#";
+			?>
+			<div id="wp-template-preview-links" data-template-preview-links="<?php echo esc_js( wp_json_encode( $links ) ); ?>">
+				<a target="_blank" href="<?php echo esc_url( $current_tempalte_preview_link ); ?>">Template Preview</a>
+			</div>
+			<?php
+			}
+
 			$images = $this->get_images( $post );
 			$images['default'] = ''; // Prevents breaking
 
@@ -164,6 +201,25 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 			}
 			return $images;
 		}
+
+		/**
+		 * Get the list of all preview links
+		 * 
+		 * Get all preivew links for all templates for current post
+		 *
+		 * @param object $post WP_Post object
+		 * @return array URL
+		 * @author oneTarek
+		 */
+		protected function get_preview_links( $post ) {
+			$links = array();
+			$preview_link = get_preview_post_link( $post );
+			$templates = get_page_templates( $post );
+			foreach ( $templates as $template_name => $template_file ) {
+				$links[$template_file] = add_query_arg( array("template"=>$template_file), $preview_link );
+			}
+			return $links;
+		}
 		
 		/**
 		 * Get template preview image header data
@@ -191,6 +247,29 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 */
 		protected function get_path() {
 			return get_template_directory() . DIRECTORY_SEPARATOR;
+		}
+
+		/**
+		 * Filter wp current tempalte. 
+		 * If current request is a page preview request and custom 
+		 * page tempalte file name is given with url then load that new tempalte
+		 * @param string $template.
+		 * @return string 
+		 * @author : oneTarek
+		 **/
+		public function set_preview_template( $template ) {
+			if( !is_preview() ){
+				return $template;
+			}
+
+			if( isset( $_GET['template'] ) && $_GET['template'] !="" ){
+				$new_template = locate_template( $_GET['template'], false, false );
+				if( $new_template ){
+					return $new_template;
+				}
+			}
+			
+			return $template;
 		}
 	}
 
