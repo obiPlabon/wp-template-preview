@@ -179,7 +179,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 			$preview_link = get_preview_post_link( $post );
 			$templates = get_page_templates( $post );
 			foreach ( $templates as $template_name => $template_file ) {
-				$links[] = add_query_arg( array("template"=>$template_file), $preview_link );
+				$links[$template_file] = add_query_arg( array("template"=>$template_file), $preview_link );
 			}
 			return $links;
 		}
