@@ -3,7 +3,7 @@
  * Plugin Name: WP Template Preview
  * Plugin URI: https://obiPlabon.im/wp-template-preview
  * Description: Display custom page or post template preview image to improve UX.
- * Version: 0.0.7
+ * Version: 0.0.8
  * Author: obiPlabon
  * Author URI: https://obiPlabon.im
  * Contributor: oneTarek http://onetarek.com
@@ -57,7 +57,7 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 
 			add_action( 'page_attributes_meta_box_template', array( $this, 'render_frame' ), 10, 2 );
 			add_action( 'admin_head', array( $this, 'enqueue_style' ) );
-			add_action( 'admin_footer', array( $this, 'enqueue_script' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_script' ) );
 		}
 
 		/**
@@ -89,58 +89,13 @@ if ( ! class_exists( 'WP_Template_Preview' ) ) :
 		 * @return void
 		 */
 		public function enqueue_script() {
-			?>
-			<script>
-				jQuery( function( $ ) {
-					var $pageTemplate     = $( '#page_template' ),
-						$wpTemplatePrview = $( '#wp-template-preview' ),
-						$previewImage     = $wpTemplatePrview.find( 'img' ), 
-						$deletableEmptyP  = $( '#wp-template-preview' ).next(),
-						templatePreviews  = $wpTemplatePrview.data( 'template-images' );
-						
-						$wpTemplatePrviewLinks = $( '#wp-template-preview-links' ),
-						$previewLinkTag = $wpTemplatePrviewLinks.find('a').first(),
-						templatePreviewLinks  = $wpTemplatePrviewLinks.data( 'template-preview-links' );
-
-					if ( $deletableEmptyP.is( 'p' ) && 0 === $deletableEmptyP.text().length ) {
-						$deletableEmptyP.remove();
-					}
-
-					$pageTemplate.after( $wpTemplatePrview.detach() );
-
-					$pageTemplate.on( 'change.wpTemplatePreview', function() {
-						var template = $( this ).val();
-						if ( $.isPlainObject( templatePreviews ) && typeof templatePreviews[ template ] !== undefined ) {
-							$previewImage.attr( 'src', templatePreviews[ template ] );
-
-						}
-
-						if ( ! $previewImage.prop( 'src' ) ) {
-							$wpTemplatePrview.addClass( 'hidden' );
-						} else {
-							$wpTemplatePrview.removeClass( 'hidden' );
-						}
-
-						if ( $.isPlainObject( templatePreviewLinks ) && typeof templatePreviewLinks[ template ] !== 'undefined' ) {
-							$previewImage.attr( 'src', templatePreviews[ template ] );
-							$previewLinkTag.attr( 'href', templatePreviewLinks[ template ] );
-
-						}else{
-							$previewLinkTag.attr( 'href', "#" );
-						}
-
-						if ( ! $previewLinkTag.prop( 'href' ) || $previewLinkTag.attr( 'href' ) == "#" ) {
-							$wpTemplatePrviewLinks.addClass( 'hidden' );
-						} else {
-							$wpTemplatePrviewLinks.removeClass( 'hidden' );
-						}
-
-					} );
-
-					$pageTemplate.trigger( 'change.wpTemplatePreview' );
-				} );
-			</script>
-			<?php
+			wp_enqueue_script(
+				'wp-template-preview',
+				plugin_dir_url( __FILE__ ) . 'assets/js/main.js',
+				array( 'jquery' ),
+				'0.0.8',
+				true
+			);
 		}
 
 		/**
